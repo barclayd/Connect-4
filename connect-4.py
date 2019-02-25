@@ -95,10 +95,8 @@ def draw_circle(c, r, colour):
                                         height - int(r * SQUARE_SIZE + SQUARE_SIZE / 2)), RADIUS)
 
 
-
-
 # game status
-game_status = True
+game_over = False
 turn = 0
 
 pygame.init()
@@ -119,11 +117,20 @@ change_board_orientation(board)
 draw_board(board)
 pygame.display.update()
 
-while game_status:
+while not game_over:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+
+        if event.type == pygame.MOUSEMOTION:
+            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARE_SIZE))
+            pos_x = event.pos[0]
+            if turn % 2 == 0:
+                pygame.draw.circle(screen, RED, (pos_x, int(SQUARE_SIZE/2)), RADIUS)
+            else:
+                pygame.draw.circle(screen, YELLOW, (pos_x, int(SQUARE_SIZE/2)), RADIUS)
+        pygame.display.update()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if turn % 2 == 0:
@@ -135,7 +142,7 @@ while game_status:
                     drop_piece(board, row, col, PLAYER_1_PIECE)
                     if winning_move(board, PLAYER_1_PIECE):
                         print('Player 1 wins!')
-                        game_status = False
+                        game_over = True
                         break
 
             if turn % 2 != 0:
@@ -147,9 +154,13 @@ while game_status:
                     drop_piece(board, row, col, PLAYER_2_PIECE)
                     if winning_move(board, PLAYER_2_PIECE):
                         print('Player 2 wins!')
-                        game_status = False
+                        game_over = True
                         break
 
-            turn += 1
             change_board_orientation(board)
             draw_board(board)
+
+            turn += 1
+
+            if game_over:
+                pygame.time.wait(2000)
