@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 import sys
+import math
 
 # setup of connect 4 matrix
 COL_COUNT = 7
@@ -9,8 +10,10 @@ PLAYER_1_PIECE = 1
 PLAYER_2_PIECE = 2
 
 # connect 4 board set up
-BLUE = (27, 82, 100)
+BLUE = (0, 0, 225)
 BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
 
 
 # functions
@@ -77,7 +80,21 @@ def draw_board(board):
             pygame.draw.rect(screen, BLUE, ((c * SQUARE_SIZE),
                                             (r * SQUARE_SIZE) + SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
             pygame.draw.circle(screen, BLACK, (int(c * SQUARE_SIZE + SQUARE_SIZE / 2),
-                                               int(r * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE/2)), RADIUS)
+                                            int(r * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE / 2)), RADIUS)
+    for c in range(COL_COUNT):
+        for r in range(ROW_COUNT):
+            if board[r][c] == 1:
+                draw_circle(c, r, RED)
+            if board[r][c] == 2:
+                draw_circle(c, r, YELLOW)
+    pygame.display.update()
+
+
+def draw_circle(c, r, colour):
+    pygame.draw.circle(screen, colour, (int(c * SQUARE_SIZE + SQUARE_SIZE / 2),
+                                        height - int(r * SQUARE_SIZE + SQUARE_SIZE / 2)), RADIUS)
+
+
 
 
 # game status
@@ -109,29 +126,30 @@ while game_status:
             sys.exit()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-                continue
-            # if turn % 2 == 0:
-            #     col = int(input('Player 1 - Make your move! (0-6): '))
-            #
-            #     if is_valid_location(board, col):
-            #         row = get_next_open_row(board, col)
-            #         drop_piece(board, row, col, PLAYER_1_PIECE)
-            #         if winning_move(board, PLAYER_1_PIECE):
-            #             print('Player 1 wins!')
-            #             game_status = False
-            #             break
-            #
-            # if turn % 2 != 0:
-            #     col = int(input('Player 2 - Make your move! (0-6): '))
-            #
-            #     if is_valid_location(board, col):
-            #         row = get_next_open_row(board, col)
-            #         drop_piece(board, row, col, PLAYER_2_PIECE)
-            #         if winning_move(board, PLAYER_2_PIECE):
-            #             print('Player 2 wins!')
-            #             game_status = False
-            #             break
-            #
-            # turn += 1
-            # change_board_orientation(board)
-            # player 2 input
+            if turn % 2 == 0:
+                pos_x = event.pos[0]
+                col = int(math.floor(pos_x/SQUARE_SIZE))
+
+                if is_valid_location(board, col):
+                    row = get_next_open_row(board, col)
+                    drop_piece(board, row, col, PLAYER_1_PIECE)
+                    if winning_move(board, PLAYER_1_PIECE):
+                        print('Player 1 wins!')
+                        game_status = False
+                        break
+
+            if turn % 2 != 0:
+                pos_x = event.pos[0]
+                col = int(math.floor(pos_x / SQUARE_SIZE))
+
+                if is_valid_location(board, col):
+                    row = get_next_open_row(board, col)
+                    drop_piece(board, row, col, PLAYER_2_PIECE)
+                    if winning_move(board, PLAYER_2_PIECE):
+                        print('Player 2 wins!')
+                        game_status = False
+                        break
+
+            turn += 1
+            change_board_orientation(board)
+            draw_board(board)
