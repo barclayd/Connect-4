@@ -95,6 +95,16 @@ def draw_circle(c, r, colour):
                                         height - int(r * SQUARE_SIZE + SQUARE_SIZE / 2)), RADIUS)
 
 
+def winning_text():
+    if turn % 2 == 0:
+        winning_player = 'Player 1'
+        label = win_text.render("{} wins!".format(winning_player), 1, RED)
+    else:
+        winning_player = 'Player 2'
+        label = win_text.render("{} wins!".format(winning_player), 1, RED)
+    screen.blit(label, (40, 10))
+
+
 # game status
 game_over = False
 turn = 0
@@ -117,6 +127,8 @@ change_board_orientation(board)
 draw_board(board)
 pygame.display.update()
 
+win_text = pygame.font.SysFont("monospace", 75)
+
 while not game_over:
 
     for event in pygame.event.get():
@@ -133,6 +145,7 @@ while not game_over:
         pygame.display.update()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
+            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARE_SIZE))
             if turn % 2 == 0:
                 pos_x = event.pos[0]
                 col = int(math.floor(pos_x/SQUARE_SIZE))
@@ -141,9 +154,9 @@ while not game_over:
                     row = get_next_open_row(board, col)
                     drop_piece(board, row, col, PLAYER_1_PIECE)
                     if winning_move(board, PLAYER_1_PIECE):
-                        print('Player 1 wins!')
+                        label = win_text.render("Player 1 wins!", 1, YELLOW)
+                        screen.blit(label, (40, 10))
                         game_over = True
-                        break
 
             if turn % 2 != 0:
                 pos_x = event.pos[0]
@@ -153,9 +166,9 @@ while not game_over:
                     row = get_next_open_row(board, col)
                     drop_piece(board, row, col, PLAYER_2_PIECE)
                     if winning_move(board, PLAYER_2_PIECE):
-                        print('Player 2 wins!')
+                        label = win_text.render("Player 1 wins!", 1, YELLOW)
+                        screen.blit(label, (40, 10))
                         game_over = True
-                        break
 
             change_board_orientation(board)
             draw_board(board)
@@ -163,4 +176,4 @@ while not game_over:
             turn += 1
 
             if game_over:
-                pygame.time.wait(2000)
+                pygame.time.wait(3000)
