@@ -11,3 +11,4 @@
 ### Future Improvements
 
 * Options page on game start up to toggle between 2 player and vs Computer
+* Deploy as installable progam
