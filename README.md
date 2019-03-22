@@ -12,3 +12,4 @@
 
 * Options page on game start up to toggle between 2 player and vs Computer
 * Deploy as installable progam
+* Customise game and choose player colour pieces
