@@ -1,13 +1,18 @@
-import numpy as np
+import numpy
 import pygame
 import sys
 import math
+import random
 
 # setup of connect 4 matrix
 COL_COUNT = 7
 ROW_COUNT = 6
 PLAYER_1_PIECE = 1
 PLAYER_2_PIECE = 2
+
+# players
+PLAYER = 0
+AI = 1
 
 # connect 4 board set up
 BLUE = (0, 0, 225)
@@ -19,7 +24,7 @@ YELLOW = (255, 255, 0)
 # functions
 def create_board():
     # matrix to represent board
-    board = np.zeros((ROW_COUNT, COL_COUNT))
+    board = numpy.zeros((ROW_COUNT, COL_COUNT))
     return board
 
 
@@ -38,8 +43,14 @@ def get_next_open_row(board, col):
             return r
 
 
+def increment_turn(increment):
+    global turn
+    turn += increment
+    turn = turn % 2
+
+
 def change_board_orientation(board):
-    print(np.flip(board, 0))
+    print(numpy.flip(board, 0))
 
 
 def winning_move(board, piece):
@@ -102,7 +113,7 @@ def winning_text():
 
 # game status
 game_over = False
-turn = 0
+turn = random.choice([PLAYER, AI])
 
 pygame.init()
 
@@ -133,7 +144,7 @@ while not game_over:
         if event.type == pygame.MOUSEMOTION:
             pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARE_SIZE))
             pos_x = event.pos[0]
-            if turn % 2 == 0:
+            if turn % 2 == PLAYER:
                 pygame.draw.circle(screen, RED, (pos_x, int(SQUARE_SIZE/2)), RADIUS)
             else:
                 pygame.draw.circle(screen, YELLOW, (pos_x, int(SQUARE_SIZE/2)), RADIUS)
@@ -141,7 +152,7 @@ while not game_over:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARE_SIZE))
-            if turn % 2 == 0:
+            if turn == PLAYER:
                 pos_x = event.pos[0]
                 col = int(math.floor(pos_x/SQUARE_SIZE))
 
@@ -153,23 +164,25 @@ while not game_over:
                         screen.blit(label, (40, 10))
                         game_over = True
 
-            if turn % 2 != 0:
-                pos_x = event.pos[0]
-                col = int(math.floor(pos_x / SQUARE_SIZE))
+                    increment_turn(1)
 
-                if is_valid_location(board, col):
-                    row = get_next_open_row(board, col)
-                    drop_piece(board, row, col, PLAYER_2_PIECE)
-                    if winning_move(board, PLAYER_2_PIECE):
-                        label = win_text.render("Player 1 wins!", 1, YELLOW)
-                        screen.blit(label, (40, 10))
-                        game_over = True
+    # AI move
+    if turn == AI and not game_over:
+
+        col = random.randint(0, COL_COUNT-1)
+
+        if is_valid_location(board, col):
+            row = get_next_open_row(board, col)
+            drop_piece(board, row, col, PLAYER_2_PIECE)
+            if winning_move(board, PLAYER_2_PIECE):
+                label = win_text.render("Player 1 wins!", 1, YELLOW)
+                screen.blit(label, (40, 10))
+                game_over = True
 
             change_board_orientation(board)
             draw_board(board)
 
-            turn += 1
+            increment_turn(1)
 
-            if game_over:
-                pygame.time.delay(3000)
-                pass
+        if game_over:
+            pygame.time.wait(3000)
