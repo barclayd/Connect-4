@@ -1,7 +1,8 @@
-import numpy as np
+import numpy
 import pygame
 import sys
 import math
+import random
 
 # setup of connect 4 matrix
 COL_COUNT = 7
@@ -19,7 +20,7 @@ YELLOW = (255, 255, 0)
 # functions
 def create_board():
     # matrix to represent board
-    board = np.zeros((ROW_COUNT, COL_COUNT))
+    board = numpy.zeros((ROW_COUNT, COL_COUNT))
     return board
 
 
@@ -39,7 +40,7 @@ def get_next_open_row(board, col):
 
 
 def change_board_orientation(board):
-    print(np.flip(board, 0))
+    print(numpy.flip(board, 0))
 
 
 def winning_move(board, piece):
@@ -102,7 +103,7 @@ def winning_text():
 
 # game status
 game_over = False
-turn = 0
+turn = random.randint(0, 1)
 
 pygame.init()
 
