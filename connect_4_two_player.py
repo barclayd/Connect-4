@@ -38,10 +38,6 @@ def get_next_open_row(board, col):
             return r
 
 
-def check_is_four_in_row():
-    pass
-
-
 def change_board_orientation(board):
     print(np.flip(board, 0))
 
@@ -79,8 +75,7 @@ def draw_board(board):
         for r in range(ROW_COUNT):
             pygame.draw.rect(screen, BLUE, ((c * SQUARE_SIZE),
                                             (r * SQUARE_SIZE) + SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
-            pygame.draw.circle(screen, BLACK, (int(c * SQUARE_SIZE + SQUARE_SIZE / 2),
-                                            int(r * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE / 2)), RADIUS)
+            pygame.draw.circle(screen, BLACK, (int(c * SQUARE_SIZE + SQUARE_SIZE / 2), int(r * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE / 2)), RADIUS)
     for c in range(COL_COUNT):
         for r in range(ROW_COUNT):
             if board[r][c] == 1:
