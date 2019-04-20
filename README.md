@@ -10,6 +10,7 @@
 
 ### Future Improvements
 
+* Option to change difficulty of AI (depth level of recursive algorithm)
 * Options page on game start up to toggle between 2 player and vs Computer
 * Deploy as installable .exe/.dmg
 * Customise game and choose player colour pieces
