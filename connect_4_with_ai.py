@@ -123,16 +123,6 @@ def draw_circle(c, r, colour):
                                         height - int(r * SQUARE_SIZE + SQUARE_SIZE / 2)), RADIUS)
 
 
-def winning_text():
-    if turn % 2 == 0:
-        winning_player = 'Player 1'
-        label = win_text.render("{} wins!".format(winning_player), 1, RED)
-    else:
-        winning_player = 'Player 2'
-        label = win_text.render("{} wins!".format(winning_player), 1, RED)
-    screen.blit(label, (40, 10))
-
-
 def score_position(board, piece):
     score = 0
     # prioritise the centre of the board
@@ -256,7 +246,7 @@ def minimax(board, depth, alpha, beta, maximising_player):
 
 # game status
 game_over = False
-turn = random.choice([PLAYER, AI])
+turn = random.randint(0, 1)
 
 pygame.init()
 
@@ -281,7 +271,6 @@ pygame.display.update()
 win_text = pygame.font.SysFont("helvetica", 75)
 
 while not game_over:
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -303,8 +292,8 @@ while not game_over:
                     row = get_next_open_row(board, col)
                     drop_piece(board, row, col, PLAYER_PIECE)
                     if winning_move(board, PLAYER_PIECE):
-                        label = win_text.render("Player 1 wins!", 1, YELLOW)
-                        screen.blit(label, (40, 10))
+                        label = win_text.render("You win!", 1, RED)
+                        screen.blit(label, (width / 2 - label.get_width() / 2, 25))
                         game_over = True
 
                     increment_turn()
@@ -312,14 +301,14 @@ while not game_over:
     # AI move
     if turn == AI and not game_over:
 
-        col, minimax_score = minimax(board, 4, -math.inf, math.inf, True)
+        col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
 
         if is_valid_location(board, col):
             row = get_next_open_row(board, col)
             drop_piece(board, row, col, AI_PIECE)
             if winning_move(board, AI_PIECE):
-                label = win_text.render("Player 1 wins!", 1, YELLOW)
-                screen.blit(label, (40, 10))
+                label = win_text.render("AI wins!", 1, YELLOW)
+                screen.blit(label, (width / 2 - label.get_width() / 2, 25))
                 game_over = True
 
             change_board_orientation(board)
