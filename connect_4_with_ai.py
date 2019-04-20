@@ -96,6 +96,7 @@ def score_window(window, piece):
         score += 5
     elif window.count(piece) == 2 and window.count(EMPTY_PIECE) == 2:
         score += 2
+
     if window.count(opponent_piece) == 3 and window.count(EMPTY_PIECE) == 1:
         score -= 4
 
@@ -135,31 +136,31 @@ def winning_text():
 def score_position(board, piece):
     score = 0
     # prioritise the centre of the board
-    centre_array = [int(i) for i in list(board[:, COL_COUNT//2])]
+    centre_array = [int(i) for i in list(board[:, COL_COUNT // 2])]
     centre_count = centre_array.count(piece)
     score += centre_count * 3
 
     # check horizontal score
     for r in range(ROW_COUNT):
         row_array = [int(i) for i in list(board[r, :])]
-        for c in range(COL_COUNT-3):
+        for c in range(COL_COUNT - 3):
             # breaking matrix up into slices of 4
             window = row_array[c:c+WINDOW_LENGTH]
-            score = score_window(window, piece)
+            score += score_window(window, piece)
 
     # check vertical score
     for c in range(COL_COUNT):
         column_array = [int(i) for i in list(board[:, c])]
-        for r in range(ROW_COUNT-3):
+        for r in range(ROW_COUNT - 3):
             # breaking matrix up into slices of 4
             window = column_array[r:r+WINDOW_LENGTH]
-            score = score_window(window, piece)
+            score += score_window(window, piece)
 
     # check positively sloped diagonal score
     for r in range(ROW_COUNT - 3):
         for c in range(COL_COUNT - 3):
             window = [board[r+i][c+i] for i in range(WINDOW_LENGTH)]
-            score = score_window(window, piece)
+            score += score_window(window, piece)
 
     # check negatively sloped diagonal score
     for r in range(ROW_COUNT - 3):
@@ -230,7 +231,7 @@ def minimax(board, depth, alpha, beta, maximising_player):
                 value = new_score
                 chosen_column = column
             alpha = max(alpha, value)
-            if alpha > beta:
+            if alpha >= beta:
                 break
         return chosen_column, value
 
@@ -248,7 +249,7 @@ def minimax(board, depth, alpha, beta, maximising_player):
                 value = new_score
                 chosen_column = column
             beta = min(beta, value)
-            if alpha > beta:
+            if alpha >= beta:
                 break
         return chosen_column, value
 
@@ -269,13 +270,15 @@ size = (width, height)
 
 screen = pygame.display.set_mode(size)
 
+pygame.display.set_caption('Connect 4')
+
 # instantiations
 board = create_board()
 change_board_orientation(board)
 draw_board(board)
 pygame.display.update()
 
-win_text = pygame.font.SysFont("monospace", 75)
+win_text = pygame.font.SysFont("helvetica", 75)
 
 while not game_over:
 
@@ -309,7 +312,7 @@ while not game_over:
     # AI move
     if turn == AI and not game_over:
 
-        col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
+        col, minimax_score = minimax(board, 4, -math.inf, math.inf, True)
 
         if is_valid_location(board, col):
             row = get_next_open_row(board, col)
@@ -326,4 +329,3 @@ while not game_over:
 
         if game_over:
             pygame.time.wait(3000)
-            change_board_orientation(board)
