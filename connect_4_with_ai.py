@@ -198,6 +198,56 @@ def choose_optimum_move(board, piece):
     return best_col
 
 
+def is_terminal_node(board):
+    return winning_move(board, PLAYER_PIECE) or winning_move(board, AI_PIECE) or len(get_valid_locations(board)) == 0
+
+
+def minimax(node, depth, maximising_player):
+    valid_locations = get_valid_locations(board)
+    is_terminal = is_terminal_node(board)
+    if depth == 0 or is_terminal:
+        if is_terminal:
+            # game is over
+            if winning_move(board, AI_PIECE):
+                return None, 10000000
+            elif winning_move(board, PLAYER_PIECE):
+                return None, -10000000
+            else:
+                return None, 0
+        else:
+            # depth = 0
+            return None, score_position(board, AI_PIECE)
+
+    if maximising_player:
+        value = -math.inf
+        chosen_column = random.choice(valid_locations)
+
+        for column in valid_locations:
+            row = get_next_open_row(board, column)
+            board_copy = board.copy()
+            drop_piece(board, row, column, AI_PIECE)
+            new_score = minimax(board_copy, depth-1, False)[1]
+            if new_score > value:
+                value = new_score
+                chosen_column = column
+            return chosen_column, value
+
+    else:
+        # minimising player
+        value = math.inf
+        chosen_column = random.choice(valid_locations)
+
+        for column in valid_locations:
+            row = get_next_open_row(board, column)
+            board_copy = board.copy()
+            drop_piece(board, row, column, PLAYER_PIECE)
+            new_score = minimax(board_copy, depth-1, True)[1]
+            if new_score < value:
+                value = new_score
+                chosen_column = column
+            return chosen_column, value
+
+
 # game status
 game_over = False
 turn = random.choice([PLAYER, AI])
@@ -255,7 +305,8 @@ while not game_over:
     if turn == AI and not game_over:
 
         # col = random.randint(0, COL_COUNT-1)
-        col = choose_optimum_move(board, AI_PIECE)
+        # col = choose_optimum_move(board, AI_PIECE)
+        col, minimax_score = minimax(board, 4, True)
 
         if is_valid_location(board, col):
             row = get_next_open_row(board, col)
