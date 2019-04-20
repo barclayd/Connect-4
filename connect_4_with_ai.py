@@ -83,6 +83,25 @@ def winning_move(board, piece):
                 return True
 
 
+def score_window(window, piece):
+    score = 0
+
+    opponent_piece = PLAYER_PIECE
+    if piece == PLAYER_PIECE:
+        opponent_piece = AI_PIECE
+
+    if window.count(piece) == 4:
+        score += 100
+    elif window.count(piece) == 3 and window.count(EMPTY_PIECE) == 1:
+        score += 10
+    elif window.count(piece) == 2 and window.count(EMPTY_PIECE) == 2:
+        score += 5
+    if window.count(opponent_piece) == 3 and window.count(EMPTY_PIECE) == 1:
+        score -= 80
+
+    return score
+
+
 def draw_board(board):
     for c in range(COL_COUNT):
         for r in range(ROW_COUNT):
@@ -115,16 +134,40 @@ def winning_text():
 
 def score_position(board, piece):
     score = 0
+    # check centre of the board
+    print(COL_COUNT//2)
+    centre_array = [int(i) for i in list(board[:, COL_COUNT//2])]
+    centre_count = centre_array.count(piece)
+    score += centre_count * 6
+
     # check horizontal score
     for r in range(ROW_COUNT):
         row_array = [int(i) for i in list(board[r, :])]
         for c in range(COL_COUNT-3):
             # breaking matrix up into slices of 4
             window = row_array[c:c+WINDOW_LENGTH]
-            if window.count(piece) == 4:
-                score += 100
-            elif window.count(piece) == 3 and window.count(EMPTY_PIECE) == 1:
-                score += 10
+            score = score_window(window, piece)
+
+    # check vertical score
+    for c in range(COL_COUNT):
+        column_array = [int(i) for i in list(board[:, c])]
+        for r in range(ROW_COUNT-3):
+            # breaking matrix up into slices of 4
+            window = column_array[r:r+WINDOW_LENGTH]
+            score = score_window(window, piece)
+
+    # check positively sloped diagonal score
+    for r in range(ROW_COUNT - 3):
+        for c in range(COL_COUNT - 3):
+            window = [board[r+i][c+i] for i in range(WINDOW_LENGTH)]
+            score = score_window(window, piece)
+
+    # check negatively sloped diagonal score
+    for r in range(ROW_COUNT - 3):
+        for c in range(COL_COUNT - 3):
+            window = [board[r+3-i][c+i] for i in range(WINDOW_LENGTH)]
+            score += score_window(window, piece)
+
     return score
 
 
@@ -138,7 +181,7 @@ def get_valid_locations(board):
 
 def choose_optimum_move(board, piece):
     # returns the column of the best column in which to drop the next piece
-    best_score = 0
+    best_score = -10000
     valid_locations = get_valid_locations(board)
     best_col = random.choice(valid_locations)
     # simulate dropping in a piece to calculate highest possible scores
@@ -229,3 +272,4 @@ while not game_over:
 
         if game_over:
             pygame.time.wait(3000)
+            change_board_orientation(board)
