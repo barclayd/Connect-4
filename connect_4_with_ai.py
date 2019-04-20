@@ -45,9 +45,9 @@ def get_next_open_row(board, col):
             return r
 
 
-def increment_turn(increment):
+def increment_turn():
     global turn
-    turn += increment
+    turn += 1
     turn = turn % 2
 
 
@@ -93,11 +93,11 @@ def score_window(window, piece):
     if window.count(piece) == 4:
         score += 100
     elif window.count(piece) == 3 and window.count(EMPTY_PIECE) == 1:
-        score += 10
-    elif window.count(piece) == 2 and window.count(EMPTY_PIECE) == 2:
         score += 5
+    elif window.count(piece) == 2 and window.count(EMPTY_PIECE) == 2:
+        score += 2
     if window.count(opponent_piece) == 3 and window.count(EMPTY_PIECE) == 1:
-        score -= 80
+        score -= 4
 
     return score
 
@@ -134,11 +134,10 @@ def winning_text():
 
 def score_position(board, piece):
     score = 0
-    # check centre of the board
-    print(COL_COUNT//2)
+    # prioritise the centre of the board
     centre_array = [int(i) for i in list(board[:, COL_COUNT//2])]
     centre_count = centre_array.count(piece)
-    score += centre_count * 6
+    score += centre_count * 3
 
     # check horizontal score
     for r in range(ROW_COUNT):
@@ -202,7 +201,7 @@ def is_terminal_node(board):
     return winning_move(board, PLAYER_PIECE) or winning_move(board, AI_PIECE) or len(get_valid_locations(board)) == 0
 
 
-def minimax(node, depth, maximising_player):
+def minimax(board, depth, maximising_player):
     valid_locations = get_valid_locations(board)
     is_terminal = is_terminal_node(board)
     if depth == 0 or is_terminal:
@@ -225,12 +224,12 @@ def minimax(node, depth, maximising_player):
         for column in valid_locations:
             row = get_next_open_row(board, column)
             board_copy = board.copy()
-            drop_piece(board, row, column, AI_PIECE)
+            drop_piece(board_copy, row, column, AI_PIECE)
             new_score = minimax(board_copy, depth-1, False)[1]
             if new_score > value:
                 value = new_score
                 chosen_column = column
-            return chosen_column, value
+        return chosen_column, value
 
     else:
         # minimising player
@@ -240,12 +239,12 @@ def minimax(node, depth, maximising_player):
         for column in valid_locations:
             row = get_next_open_row(board, column)
             board_copy = board.copy()
-            drop_piece(board, row, column, PLAYER_PIECE)
+            drop_piece(board_copy, row, column, PLAYER_PIECE)
             new_score = minimax(board_copy, depth-1, True)[1]
             if new_score < value:
                 value = new_score
                 chosen_column = column
-            return chosen_column, value
+        return chosen_column, value
 
 
 # game status
@@ -299,13 +298,11 @@ while not game_over:
                         screen.blit(label, (40, 10))
                         game_over = True
 
-                    increment_turn(1)
+                    increment_turn()
 
     # AI move
     if turn == AI and not game_over:
 
-        # col = random.randint(0, COL_COUNT-1)
-        # col = choose_optimum_move(board, AI_PIECE)
         col, minimax_score = minimax(board, 4, True)
 
         if is_valid_location(board, col):
@@ -319,7 +316,7 @@ while not game_over:
             change_board_orientation(board)
             draw_board(board)
 
-            increment_turn(1)
+            increment_turn()
 
         if game_over:
             pygame.time.wait(3000)
