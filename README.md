@@ -6,7 +6,7 @@
 #### Demo
 
 <p align="center">
-  <img alt="Game play" src='https://user-images.githubusercontent.com/39765499/56461895-fad2f000-63b1-11e9-8b41-ee9dc6aabc4c.gif'>
+  <img alt="Connect 4 game play" src='https://user-images.githubusercontent.com/39765499/56462040-26ef7080-63b4-11e9-8f5a-7f0b4dec216d.gif'>
 </p>
 
 <p align="center">
