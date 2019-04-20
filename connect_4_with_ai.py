@@ -201,7 +201,7 @@ def is_terminal_node(board):
     return winning_move(board, PLAYER_PIECE) or winning_move(board, AI_PIECE) or len(get_valid_locations(board)) == 0
 
 
-def minimax(board, depth, maximising_player):
+def minimax(board, depth, alpha, beta, maximising_player):
     valid_locations = get_valid_locations(board)
     is_terminal = is_terminal_node(board)
     if depth == 0 or is_terminal:
@@ -225,10 +225,13 @@ def minimax(board, depth, maximising_player):
             row = get_next_open_row(board, column)
             board_copy = board.copy()
             drop_piece(board_copy, row, column, AI_PIECE)
-            new_score = minimax(board_copy, depth-1, False)[1]
+            new_score = minimax(board_copy, depth-1, alpha, beta, False)[1]
             if new_score > value:
                 value = new_score
                 chosen_column = column
+            alpha = max(alpha, value)
+            if alpha > beta:
+                break
         return chosen_column, value
 
     else:
@@ -240,10 +243,13 @@ def minimax(board, depth, maximising_player):
             row = get_next_open_row(board, column)
             board_copy = board.copy()
             drop_piece(board_copy, row, column, PLAYER_PIECE)
-            new_score = minimax(board_copy, depth-1, True)[1]
+            new_score = minimax(board_copy, depth-1, alpha, beta, True)[1]
             if new_score < value:
                 value = new_score
                 chosen_column = column
+            beta = min(beta, value)
+            if alpha > beta:
+                break
         return chosen_column, value
 
 
@@ -303,7 +309,7 @@ while not game_over:
     # AI move
     if turn == AI and not game_over:
 
-        col, minimax_score = minimax(board, 4, True)
+        col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
 
         if is_valid_location(board, col):
             row = get_next_open_row(board, col)
