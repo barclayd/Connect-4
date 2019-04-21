@@ -24,7 +24,7 @@
 **_To Run 2 player game_**
 
 ```
-$ git clone https://github.com/barclayd/Connect-4
+$ git clone https://github.com/barclayd/Connect-4.git
 $ cd Connect-4
 $ python connect_4_two_player.py
 ```
@@ -32,7 +32,7 @@ $ python connect_4_two_player.py
 **_To run vs AI game_**
 
 ```
-$ git clone https://github.com/barclayd/Connect-4
+$ git clone https://github.com/barclayd/Connect-4.git
 $ cd Connect-4
 $ python connect_4_with_ai.py
 ```
